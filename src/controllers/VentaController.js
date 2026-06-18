@@ -21,6 +21,15 @@ class VentaController {
       res.status(500).json({ message: error.message });
     }
   }
+
+  async getStats(req, res) {
+    try {
+      const stats = await ventaService.getEstadisticas();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 }
 
 module.exports = new VentaController();

@@ -53,6 +53,38 @@ class VentaService {
   async obtenerHistorialVentas() {
     return await Venta.find().populate('cajeroId', 'username role').sort({ createdAt: -1 });
   }
+
+  async getEstadisticas() {
+    // 1. Ingresos y cantidad total de ventas
+    const totalStats = await Venta.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalIngresos: { $sum: '$total' },
+          cantidadVentas: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 2. Productos más vendidos
+    const topProducts = await Venta.aggregate([
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: '$items.name',
+          cantidadVendida: { $sum: '$items.quantity' },
+          ingresosGenerados: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }
+        }
+      },
+      { $sort: { cantidadVendida: -1 } },
+      { $limit: 5 }
+    ]);
+
+    return {
+      resumen: totalStats.length > 0 ? totalStats[0] : { totalIngresos: 0, cantidadVentas: 0 },
+      topProducts
+    };
+  }
 }
 
 module.exports = new VentaService();
