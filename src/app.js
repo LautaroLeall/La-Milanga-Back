@@ -14,7 +14,8 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'La Milanga API is running (Boilerplate)' });
 });
 
-// Placeholder for future routes
+// Routes
+app.use('/api/auth', require('./routes/auth.routes'));
 // app.use('/api/ventas', require('./routes/ventas'));
 // app.use('/api/productos', require('./routes/productos'));
 // app.use('/api/stock', require('./routes/stock'));
