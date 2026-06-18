@@ -8,6 +8,7 @@ class VentaService {
     }
 
     let totalVenta = 0;
+    let totalCosto = 0;
     const ventaItems = [];
 
     // 1. Verificación de stock y cálculo de totales
@@ -23,11 +24,13 @@ class VentaService {
       }
 
       totalVenta += product.price * item.quantity;
+      totalCosto += (product.cost || 0) * item.quantity;
       
       ventaItems.push({
         product: product._id,
         name: product.name,
         price: product.price,
+        cost: product.cost || 0,
         quantity: item.quantity
       });
     }
@@ -44,7 +47,8 @@ class VentaService {
     const nuevaVenta = new Venta({
       cajeroId,
       items: ventaItems,
-      total: totalVenta
+      total: totalVenta,
+      totalCosto: totalCosto
     });
 
     return await nuevaVenta.save();
@@ -55,12 +59,13 @@ class VentaService {
   }
 
   async getEstadisticas() {
-    // 1. Ingresos y cantidad total de ventas
+    // 1. Ingresos, Costos y cantidad total de ventas
     const totalStats = await Venta.aggregate([
       {
         $group: {
           _id: null,
           totalIngresos: { $sum: '$total' },
+          totalCostos: { $sum: '$totalCosto' },
           cantidadVentas: { $sum: 1 }
         }
       }
@@ -77,11 +82,17 @@ class VentaService {
         }
       },
       { $sort: { cantidadVendida: -1 } },
-      { $limit: 5 }
+      { $limit: 10 }
     ]);
 
+    const resumen = totalStats.length > 0 ? totalStats[0] : { totalIngresos: 0, totalCostos: 0, cantidadVentas: 0 };
+    const totalGanancia = (resumen.totalIngresos || 0) - (resumen.totalCostos || 0);
+
     return {
-      resumen: totalStats.length > 0 ? totalStats[0] : { totalIngresos: 0, cantidadVentas: 0 },
+      resumen: {
+        ...resumen,
+        totalGanancia
+      },
       topProducts
     };
   }

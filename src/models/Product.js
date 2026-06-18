@@ -11,6 +11,12 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0,
   },
+  cost: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0,
+  },
   stock: {
     type: Number,
     required: true,
@@ -19,8 +25,8 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['Comida', 'Bebida', 'Postre', 'Otro'],
-    default: 'Comida',
+    enum: ['Bebidas', 'Entradas / Minutas', 'Platos Principales', 'Pizzas', 'Sándwiches', 'Helados', 'Otro'],
+    default: 'Otro',
   },
 }, { timestamps: true });
 

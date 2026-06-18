@@ -8,6 +8,7 @@ const ventaItemSchema = new mongoose.Schema({
   },
   name: String, // Guardamos el nombre y precio al momento de la venta para histórico
   price: Number,
+  cost: Number, // Guardamos el costo en el momento de la venta
   quantity: {
     type: Number,
     required: true,
@@ -26,6 +27,12 @@ const ventaSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0,
+  },
+  totalCosto: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0,
   },
 }, { timestamps: true });
 
