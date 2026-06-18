@@ -4,8 +4,10 @@ const User = require('../models/User');
 
 class AuthService {
   async login(username, password) {
-    // 1. Buscar usuario
-    const user = await User.findOne({ username });
+    // 1. Buscar usuario por username o por email
+    const user = await User.findOne({ 
+      $or: [{ username: username }, { email: username }] 
+    });
     if (!user) {
       throw new Error('Credenciales inválidas');
     }
