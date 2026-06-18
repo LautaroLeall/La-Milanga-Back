@@ -17,7 +17,7 @@ app.get('/api/health', (req, res) => {
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/stock', require('./routes/stock.routes'));
-// app.use('/api/ventas', require('./routes/ventas'));
+app.use('/api/ventas', require('./routes/ventas.routes'));
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
