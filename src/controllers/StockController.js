@@ -3,7 +3,6 @@ const stockService = require('../services/StockService');
 class StockController {
   async getMenu(req, res) {
     try {
-      // Para el cajero, solo mostramos productos con stock > 0
       const products = await stockService.getAvailableProducts();
       res.json(products);
     } catch (error) {
@@ -13,7 +12,6 @@ class StockController {
 
   async getInventory(req, res) {
     try {
-      // Para el Admin/Stock, mostramos todos los productos incluso sin stock
       const products = await stockService.getAllProducts();
       res.json(products);
     } catch (error) {
@@ -32,15 +30,32 @@ class StockController {
 
   async addStock(req, res) {
     try {
-      const { id } = req.params;
       const { quantity } = req.body;
-      
       if (!quantity || isNaN(quantity)) {
         return res.status(400).json({ message: 'Cantidad inválida' });
       }
-
-      const updatedProduct = await stockService.updateStock(id, Number(quantity));
+      const updatedProduct = await stockService.updateStock(req.params.id, Number(quantity));
       res.json(updatedProduct);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  // Edita un producto completo (nombre, precio, stock, categoría)
+  async updateProduct(req, res) {
+    try {
+      const updated = await stockService.updateProduct(req.params.id, req.body);
+      res.json(updated);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  // Elimina un producto del catálogo
+  async deleteProduct(req, res) {
+    try {
+      await stockService.deleteProduct(req.params.id);
+      res.json({ message: 'Producto eliminado correctamente' });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
