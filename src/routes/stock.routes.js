@@ -3,12 +3,13 @@ const router = express.Router();
 const stockController = require('../controllers/StockController');
 const { verifyToken, checkRole } = require('../middlewares/auth.middleware');
 
-// Rutas compartidas (Todos pueden ver el menú disponible)
+// Todos los roles autenticados pueden ver el menú disponible (stock > 0)
 router.get('/menu', verifyToken, stockController.getMenu);
 
-// Rutas protegidas (Solo Admin y Stock pueden gestionar el inventario total)
+// Admin y Stock gestionan el inventario completo
 router.get('/inventory', verifyToken, checkRole(['Admin', 'Stock']), stockController.getInventory);
 router.post('/', verifyToken, checkRole(['Admin', 'Stock']), stockController.createProduct);
-router.patch('/:id/add', verifyToken, checkRole(['Admin', 'Stock']), stockController.addStock);
+router.put('/:id', verifyToken, checkRole(['Admin', 'Stock']), stockController.updateProduct);
+router.delete('/:id', verifyToken, checkRole(['Admin', 'Stock']), stockController.deleteProduct);
 
 module.exports = router;
